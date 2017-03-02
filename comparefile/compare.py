@@ -1,9 +1,9 @@
 mport sys
 import os
 
-pathA = '/Users/liutao/Desktop/saber/self/regression/s22/'
-pathB = '/Users/liutao/Desktop/saber/self/regression/y22/'
-resultFile = '/Users/liutao/Desktop/saber/self/regression/result'
+pathA = '/Users/Desktop/saber/s22/'
+pathB = '/Users/Desktop/saber/y22/'
+resultFile = '/Users/Desktop/saber/result'
 SuccessResult = '*                     Same                     *'
 FailedResult =  '*                  Different                   *'
 def FindFilenames(pathName):
@@ -11,6 +11,27 @@ def FindFilenames(pathName):
         return None
     else:
         return os.listdir(pathName)
+
+def FormatString(strContent, lelftPad = 0):
+        if strContent == '\n':
+                result = '*' + ' ' * 49 + '*' + '\n'
+                return result
+        length = len(strContent)
+        if length > 50:
+            if leftPad == 0:
+                    return strContent + '\n'
+            else:
+                firstPart = '*' + ' ' * leftPad
+                return firstPart + strContent + '\n'
+        else:
+            if leftPad == 0:
+                firstPart == (50 - length)/2 - 1
+                secondPart = (50 -length - firstPart - 1
+            else:
+                firstPart = leftPad
+                secondPart = 50 - length - firstPart -1
+            result = '*' + ' ' * firstPart + strContent + ' ' * secondPart
+        return result
 
 def OutPutResult(fileName, Result):
     fobj = open(resultFile, 'a')
