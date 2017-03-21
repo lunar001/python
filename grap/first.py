@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8 -*-
 import urllib2
 import urllib
 import re
@@ -12,6 +12,10 @@ class Spider:
         #页面初始化
         self.siteUrl = 'http://mm.taobao.com/json/request_top_list.htm'
         self.tool = tool.Tool()
+    def WriteTofile(self, content):
+        self.dbgFile = '/data/python/grap/test'
+        fobj = open(self.dbgFile, 'a+')
+        fobj.write(content)
     #获取索引页面的内容
     def GetPage(self, pageIndex):
         url = self.siteUrl + "?page=" + str(pageIndex)
@@ -21,11 +25,13 @@ class Spider:
     
     #获取索引界面所有的MM信息， list格式
     def GetContents(self, pageIndex):
-        page = self.getPage(pageIndex)
-        pattern = re.compile('<div class="list-item".*?pic-word.*?
-        <a href="(.*?)".*?<img src="(.*?)".*?<a class="lady-name.*?>(.*?)</a>
-        .*?<strong>(.*?)</strong>.*?<span>(.*?)</span>', re.S)
+        page = self.GetPage(pageIndex)
+        pattern = re.compile(' <div class="list-item".*?\n.*?', re.S)
+        #<a href="(.*?)".*?<img src="(.*?)".*?<a class="lady-name.*?>(.*?)</a>
+        #.*?<strong>(.*?)</strong>.*?<span>(.*?)</span>''', re.S)
         result = re.search(pattern, page)
+        result = re.search('<div class="list-item".*?\n.*?', page)
+        print result.group()
         return self.tool.replace(result.group(1))
     #获取MM个人详情页面
     def getDetailPage(self, infoURL):
@@ -61,8 +67,7 @@ class Spider:
             number += 1
     
     #保存图像
-       
-    def SaveIcon(self.iconUrl, name):
+    def SaveIcon(self, iconUrl, name):
         splitPath = iconUrl.split('.')
         fTail = splitPath.pop()
         fileName = name + "/icon." + fTail
@@ -127,7 +132,7 @@ class Spider:
             self.SavePageInfo(i)
 
 spider = Spider()
-spider.savePagesInfo(2, 10)
+spider.SavePagesInfo(2, 5)
 
         
 
