@@ -30,7 +30,10 @@ class Spider:
         pattern = re.compile(r'<div class="list-item"[\w\W]*?<a href="(.*?)".*?<img src="(.*?)"[\w\W]*?</a>[\w\W]*?lady-name" href="(.*?)"[\w\W]*?<strong>(.*?)</strong>[\w\W]*?<span>(.*?)</span>')
         result = pattern.findall(page)
         #print result
-        return self.tool.replace(result.group(1))
+        contents = []
+        for item in result:
+            contents.append([item[0], item[1], item[2], item[3], item[4]])
+        return contents
     #获取MM个人详情页面
     def getDetailPage(self, infoURL):
         reponse = urllib2.urlopen(infoURL)
