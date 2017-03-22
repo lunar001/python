@@ -26,12 +26,10 @@ class Spider:
     #获取索引界面所有的MM信息， list格式
     def GetContents(self, pageIndex):
         page = self.GetPage(pageIndex)
-        pattern = re.compile(' <div class="list-item".*?\n.*?', re.S)
-        #<a href="(.*?)".*?<img src="(.*?)".*?<a class="lady-name.*?>(.*?)</a>
-        #.*?<strong>(.*?)</strong>.*?<span>(.*?)</span>''', re.S)
-        result = re.search(pattern, page)
-        result = re.search('<div class="list-item".*?\n.*?', page)
-        print result.group()
+
+        pattern = re.compile(r'<div class="list-item"[\w\W]*?<a href="(.*?)".*?<img src="(.*?)"[\w\W]*?</a>[\w\W]*?lady-name" href="(.*?)"[\w\W]*?<strong>(.*?)</strong>[\w\W]*?<span>(.*?)</span>')
+        result = pattern.findall(page)
+        #print result
         return self.tool.replace(result.group(1))
     #获取MM个人详情页面
     def getDetailPage(self, infoURL):
