@@ -27,7 +27,7 @@ class Spider:
     def GetContents(self, pageIndex):
         page = self.GetPage(pageIndex)
 
-        pattern = re.compile(r'<div class="list-item"[\w\W]*?<a href="(.*?)".*?<img src="(.*?)"[\w\W]*?</a>[\w\W]*?lady-name" href="(.*?)"[\w\W]*?<strong>(.*?)</strong>[\w\W]*?<span>(.*?)</span>')
+        pattern = re.compile(r'<div class="list-item"[\w\W]*?<a href="(.*?)".*?<img src="(.*?)"[\w\W]*?</a>[\w\W]*?lady-name"[\w\W]*?>(.*?)</a>[\w\W]*?<strong>(.*?)</strong>[\w\W]*?<span>(.*?)</span>')
         result = pattern.findall(page)
         #print result
         contents = []
@@ -36,13 +36,14 @@ class Spider:
         return contents
     #获取MM个人详情页面
     def getDetailPage(self, infoURL):
-        reponse = urllib2.urlopen(infoURL)
-        return response
+        response = urllib2.urlopen(infoURL)
+        return response.read().decode('gbk')
     #获取个人文子简介
     def GetBrief(self, page):
-        pattern = re.compile('<div class="mm-aixiu-content".*?>(.*?)<!--', re.S) 
-        result = re.search(pattern, page)
-        return self.tool.replace(result.group(1))
+        print page
+        #pattern = re.compile('<div class="mm-aixiu-content".*?>(.*?)<!--', re.S) 
+        #result = re.search(pattern, page)
+        #return self.tool.replace(result.group(1))
     
     #获取所有图片
     def GetAllImg(self, page):
@@ -118,7 +119,8 @@ class Spider:
             print u"正在保存", item[2], u"的信息"
             print u"又意外发现她的个人地址是", item[0]
             #个人详情页面url
-            detailURL = item[0]
+            detailURL = "https:"+item[0]
+            print detailURL
             detailPage = self.getDetailPage(detailURL)
             brief = self.GetBrief(detailPage)
             images = self.GetAllImg(detailPage)
