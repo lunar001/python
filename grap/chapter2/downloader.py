@@ -6,17 +6,17 @@ import random
 import time
 from datetime import datetime, timedelta
 import socket
-import throttle
+import thottle
 DEFAULT_AGENT = 'wswp'
 DEFAULT_DELAY = 5
 DEFAULT_RETRIES = 1
 DEFAULT_TIMEOUT = 60
 
 class Downloader:
-    def __init__(self, delay = DEFAULT_DELAY, user_agent = DEFAULT_AGENT,
+    def __init__(self, delay = DEFAULT_DELAY, user_agent = DEFAULT_AGENT, proxies = None,
         num_retries = DEFAULT_RETRIES, timeout = DEFAULT_TIMEOUT, opener = None, cache = None):
         socket.setdefaulttimeout(timeout)
-        self.throttle =throttle.Throttle(delay)
+        self.thottle =thottle.Throttle(delay)
         self.user_agent = user_agent
         self.proxies = proxies
         self.num_retries = num_retries
@@ -36,7 +36,7 @@ class Downloader:
                     result = None
         if result is None:
             # result was not loaded from cache so still to download
-            self.throttle.wait(url)
+            self.thottle.wait(url)
             proxy = random.choice(self.proxies) if self.proxies else None
             headers = {'User-agent': self.user_agent}
             result = self.download(url, headers, proxy = proxy, num_retries = self.num_retries)

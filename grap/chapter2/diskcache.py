@@ -4,10 +4,14 @@ import os
 import sys
 import re
 import urlparse
-import shuttil
+import shutil
 import zlib
 from datetime import datetime, timedelta
-
+import link_crawler
+try :
+    import cPickle as pickle
+except ImportError:
+    import pickle
 class DiskCache:
     """
     Dictionary interface that stores cached
@@ -37,7 +41,7 @@ class DiskCache:
         self.expires = expires
         self.compress = compress
 
-    def __getitem(self, url):
+    def __getitem__(self, url):
         """
         Load data from disk for this URL
         """
@@ -56,65 +60,65 @@ class DiskCache:
             # URL has not ye been cached
             raise KeyError(url + 'does not exist')
 
-def __setitem__(self, url, result):
-    """
-    Save data to disk for this url
-    """
-    path = self.url_to_path(url)
-    folder = os.path.dirname(path)
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    def __setitem__(self, url, result):
+        """
+        Save data to disk for this url
+        """
+        path = self.url_to_path(url)
+        folder = os.path.dirname(path)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
-    data = pickle.dumps((result, datetime.utcnow()))
-    if self.compress:
-        data = zlib.compress(data)
-    with open(path, 'wb') as fp:
-        fp.write(data)
+        data = pickle.dumps((result, datetime.utcnow()))
+        if self.compress:
+            data = zlib.compress(data)
+        print path
+        with open(path, 'wb') as fp:
+            fp.write(data)
 
-def __delitem__(self, url):
-    """
-    Remove the value at this key and any empty parent sub-diretories
-    """
-    path = self.url_to_path(url)
-    try:
-        os.remove(path)
-        os.removedirs(os.path.dirname(path))
-    except OSError:
-        pass
+    def __delitem__(self, url):
+        """
+        Remove the value at this key and any empty parent sub-diretories
+        """
+        path = self.url_to_path(url)
+        try:
+            os.remove(path)
+            os.removedirs(os.path.dirname(path))
+        except OSError:
+            pass
 
-def url_to_path(self, url):
-    """
-    Create file system path for this URL
-    """
+    def url_to_path(self, url):
+        """
+        Create file system path for this URL
+        """
 
-    components = urlparse.urlsplit(url)
-    # when empty path set to /index.html
-    #components type is class
-    path = components.path
-    if not path:
-        path = '/index.html'
-    elif path.endswith():
-        path += 'index.html'
-    filename = components.netloc + path + components.query
-    #replace invalid characters
-    filename = '/'.join(segmemt[:255] for segment in filename.split('/'))
-    return os.path.join(self.cache_dir, filename)
+        components = urlparse.urlsplit(url)
+        # when empty path set to /index.html
+        #components type is class
+        path = components.path
+        if not path:
+            path = '/index.html'
+        elif path.endswith('/'):
+            path += 'index.html'
+        filename = components.netloc + path + components.query
+        #replace invalid characters
+        filename = '/'.join(segment[:255] for segment in filename.split('/'))
+        return os.path.join(self.cache_dir, filename)
 
 
-
-def has_expired(self, timestamp):
-    """
-    Return whether this timestamp has expired
-    """
-    return datetime.utcnow() > timestamp + self.expires
-
-def clear(self):
-    """
-    Remove all the cached values
-    """
-    if os.path.exists(self.cache_dir)
-        shutil.rmtree(self.cache_dir)
-
+    def has_expired(self, timestamp):
+        """
+        Return whether this timestamp has expired
+        """
+        return datetime.utcnow() > timestamp + self.expires
+    
+    def clear(self):
+        """
+        Remove all the cached values
+        """
+        if os.path.exists(self.cache_dir):
+            shutil.rmtree(self.cache_dir)
+    
 if __name__ == '__main__':
-    link_crawler('http://example.webscraping.com', '/(index|view)', cache=DiskCache())
-
+    cr = link_crawler.Crawler('http://example.webscraping.com', '/(index|view)', cache = DiskCache())
+    cr.link_crawler()
