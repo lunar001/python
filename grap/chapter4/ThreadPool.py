@@ -5,10 +5,10 @@ import threading
 
 class WorkerTask(object):
     """ A task to be performed by the ThreadPool."""
-    def __init__(self, function, args=(), kwargs = {}):
+    def __init__(self, function, *args, **kwargs):
         self.function = function
         self.args = args
-        sefl.kwargs = kwargs
+        self.kwargs = kwargs
 
     def __call__(self):
         self.function(*self.args, **self.kwargs)
@@ -52,15 +52,18 @@ class WorkerThread(threading.Thread):
 
 class ThreadPool(object):
     """Executes queued tasks in the background."""
-
+    """We should init some thread, for to excute one Task 
+       by multi thread, if only add task one time, just single thread"""
     def __init__(self, max_pool_size = 10):
         self.max_pool_size = max_pool_size
         self._threads = []
-        self._task = []
+        self._tasks = []
+
 
     def _addTask(self, task):
         self._tasks.append(task)
         worker_thread = None
+        # this methold to find the next thread is low performance
         for thread in self._threads:
             if thread.busy is False:
                 worker_thread = thread
@@ -71,8 +74,12 @@ class ThreadPool(object):
         if worker_thread is not None:
             worker_thread.work()
 
-    def addTask(self, function, args = (), kwargs = {}):
-        self._addTask(WorkerTask(function, args, kwargs))
+    def addTask(self, function, *args, **kwargs):
+        self._addTask(WorkerTask(function, *args, **kwargs))
+
+    def stop(self):
+        for worker_thread in self._threads:
+            worker_thread.join()
 
 class GlobalThreadPool(object):
     """ ThreadPool Singleton class."""
